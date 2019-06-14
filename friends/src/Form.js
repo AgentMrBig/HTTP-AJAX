@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import reload from './FriendsList';
 
 
 const MyForm = styled.form`
@@ -56,15 +57,27 @@ class Form extends Component {
                 .post('http://localhost:5000/friends', this.state)
                 .then(response => {
                     //this.setState(() => ({ friends: response.data }));
+
                     console.log(response);
                 })
                 .catch(error => {
                     //console.error('Server Error', error);
                     console.error(error);
                 })
+
+            //this.reload();
+            this.setState({
+                name: '',
+                age: '',
+                email: ''
+            })
         }
 
 
+    }
+
+    reload() {
+        window.location.reload(true);
     }
 
     handleInputChange = (event) => {
@@ -83,7 +96,7 @@ class Form extends Component {
                     <p><input id='name' type='text' placeholder='Your Name' name='name' /></p>
                     <p><input id='age' type='text' placeholder='Age' name='age' /></p>
                     <p><input id='email' type='text' placeholder='email' name='email' /></p>
-                    <p><MyButton name='submit'>Add</MyButton></p>
+                    <p><MyButton onClick={this.props.getFriendsList} name='submit'>Add</MyButton></p>
                 </MyForm>
             </div>
 
