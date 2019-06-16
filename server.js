@@ -55,6 +55,14 @@ app.get('/friends', (req, res) => {
   res.status(200).json(friends);
 });
 
+// app.get('/friends/:id', (req, res) => {
+//   const {id} = req.params;
+//   let friendIndex = friends.findIndex(friend => friend.id == id);
+//   if(friendIndex >= 0){
+
+//   }
+// })
+
 app.post('/friends', (req, res) => {
   const friend = { id: getNewId(), ...req.body };
   friends = [...friends, friend];
@@ -76,8 +84,8 @@ app.put('/friends/:id', (req, res) => {
 });
 
 app.delete('/friends/:id', (req, res) => {
-	friends = friends.filter(friend => friend.id != req.params.id);
-	res.status(200).json(friends);
+  friends = friends.filter(friend => friend.id != req.params.id);
+  res.status(200).json(friends);
 });
 
 app.listen(5000, () => {
