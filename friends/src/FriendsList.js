@@ -133,6 +133,7 @@ export default class FriendsList extends Component {
             email: ''
         };
 
+
     }
 
     componentDidMount() {
@@ -218,6 +219,8 @@ export default class FriendsList extends Component {
     }
 
     handleEditSubmit = (event) => {
+
+
         event.preventDefault();
         if (this.validation()) {
             const data = this.state;
@@ -257,6 +260,13 @@ export default class FriendsList extends Component {
             //     email: ''
             // })
 
+            this.setState({
+                inEditMode: false
+            })
+            // clear input fields
+            document.getElementById('name').nodeValue = '';
+            document.getElementById('age').nodeValue = '';
+            document.getElementById('email').nodeValue = '';
 
         }
 
@@ -361,6 +371,7 @@ export default class FriendsList extends Component {
         this.setState({
             inEditMode: true
         })
+
         console.log('EDIT!');
         targetFriend =
             {
@@ -379,9 +390,16 @@ export default class FriendsList extends Component {
                     age: item.age,
                     email: item.email
                 }
-
+                // this.setState({
+                //     name: targetFriend.name,
+                //     age: targetFriend.age,
+                //     email: targetFriend.email
+                // })
 
             }
+        })
+        this.setState({
+            targetFriend: targetFriend
         })
 
         //console.log(targetFriend);
@@ -424,19 +442,19 @@ export default class FriendsList extends Component {
         return (
             <FriendsListContainer>
                 {this.state.inEditMode ?
-                    <MyForm onSubmit={this.handleSubmit} >
+                    <MyForm onSubmit={this.update(targetFriend.id, targetFriend)} >
                         <h1>Edit {targetFriend.name}</h1>
-                        <p><input id='name' type='text' placeholder='' name='name' onChange={this.handleInputChange} value={this.state.targetFriend.name} /></p>
-                        <p><input id='age' type='text' placeholder='' name='age' onChange={this.handleInputChange} value={this.state.targetFriend.age} /></p>
-                        <p><input id='email' type='text' placeholder='' name='email' onChange={this.handleInputChange} value={this.state.targetFriend.email} /></p>
+                        <p><input id='name' type='text' placeholder='' name='name' onChange={this.handleInputChange} value={targetFriend.name} /></p>
+                        <p><input id='age' type='text' placeholder='' name='age' onChange={this.handleInputChange} value={targetFriend.age} /></p>
+                        <p><input id='email' type='text' placeholder='' name='email' onChange={this.handleInputChange} value={targetFriend.email} /></p>
                         <p><MyButton onClick={this.getFriendsList} name='submit'>Submit</MyButton></p>
                     </MyForm>
                     :
                     <MyForm onSubmit={this.handleSubmit} >
                         <h1>Add a Friend</h1>
-                        <p><input id='name' type='text' placeholder='Your Name' name='name' onChange={this.handleInputChange} /></p>
-                        <p><input id='age' type='text' placeholder='Age' name='age' onChange={this.handleInputChange} /></p>
-                        <p><input id='email' type='text' placeholder='email' name='email' onChange={this.handleInputChange} /></p>
+                        <p><input id='name' type='text' placeholder='Your Name' name='name' onChange={this.handleInputChange} value={this.state.name} /></p>
+                        <p><input id='age' type='text' placeholder='Age' name='age' onChange={this.handleInputChange} value={this.state.age} /></p>
+                        <p><input id='email' type='text' placeholder='email' name='email' onChange={this.handleInputChange} value={this.state.email} /></p>
                         <p><MyButton onClick={this.getFriendsList} name='submit'>Add</MyButton></p>
                     </MyForm>
 
