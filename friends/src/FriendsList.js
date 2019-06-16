@@ -2,28 +2,18 @@ import React, { Component } from 'react';
 import styled from 'styled-components'
 import axios from 'axios';
 
-var mouseX, mouseY, MyModalPanel, translate3dValue;
-var scroll = 0;
-var visibility = 'visible';
+var mouseX, mouseY, translate3dValue;
+
 
 
 var panel,
-    header,
     iName,
     iAge,
-    iEmail,
-    iClose,
-    iSubmit;
+    iEmail;
 
 var targetFriend = {};
 
 var container = document.getElementById('root');
-
-window.addEventListener("scroll", function (event) {
-    scroll = this.scrollY;
-    //console.log(scroll)
-});
-
 
 //Start Form 
 const MyForm = styled.form`
@@ -60,57 +50,8 @@ const Button = styled.button`
     
 `
 
-// var MyModalPanel = styled.div`
-//     display: flex;
-//     flex-direction: column;
-
-//     border-radius: 3px;
-//     height: 400px;
-//     width: 300px;
-//     background-color: lightgray;
-
-//     position: absolute;
-
-//     transform: translate3d(50px, 50px, 0);
-//     transition: transform .3s ease-in;
-//     visibility: ${visibility};
-//     /* width: 75px;
-//     height: 75px;
-//     background-color: red;
-//     border-radius: 50%;
-//     border: 15px blue solid;
-//     position: absolute;
-//     transform: translate3d(50px, 50px, 0);
-//     transition: transform .3s ease-in;
-//     visibility: ${visibility}; */
-// `
-function mousePosListener() {
-    container.addEventListener('click', function (e) {
-        // mouseX = e.x;
-        // mouseY = e.y;
-        // mouseX = e.offsetX;
-        // mouseY = e.offsetY;
-        mouseX = e.clientX - (panel.offsetWidth / 2);
-        mouseY = e.clientY - (panel.offsetHeight / 2);
-
-        // if (!inEditMode) {
-        //     //MyModalPanel = document.getElementById('panel');
-        //     //console.log(cursorTest);
 
 
-        //     var translate3dValue = "translate3d(" + (mouseX) + "px," + (mouseY - 900) + "px,0)";
-
-
-        //     panel.style.transform = translate3dValue;
-        //     console.log(panel.style.left)
-        //     // console.log(mouseY, mouseX);
-        //     // console.log(e);
-        // } else if (inEditMode) {
-
-        // }
-
-    }, false)
-}
 function getViewportWidthHeight() {
     var w = window;
     var d = document
@@ -139,9 +80,6 @@ export default class FriendsList extends Component {
     componentDidMount() {
         this.getFriendsList();
 
-        // this.modal();
-        // cursorTest = document.querySelector('#cursor');
-        // document.body.style.overflowY = 'scroll';
     }
 
     getFriend = id => {
@@ -291,73 +229,6 @@ export default class FriendsList extends Component {
 
     // positon popup on page relative to cursor
     // position at time of click event  
-    positionPopupOnPage(evt) {
-
-        var VPWH = [];                  // view port width / height
-        var intVPW, intVPH;             // view port width / height
-        var intCoordX = mouseX;
-        var intCoordY = mouseY;    // distance from click point to view port top
-        var intDistanceScrolledUp = document.body.scrollTop;
-        // distance the page has been scrolled up from view port top
-        var intPopupOffsetTop = intDistanceScrolledUp + intCoordY;
-        // add the two for total distance from click point y to top of page
-
-        var intDistanceScrolledLeft = document.body.scrollLeft;
-        var intPopupOffsetLeft = intDistanceScrolledLeft + intCoordX;
-
-        VPWH = getViewportWidthHeight();    // view port Width/Height
-        intVPW = VPWH[0];
-        intVPH = VPWH[1];
-
-        panel.style.position = 'absolute';
-        // if not display: block, .offsetWidth & .offsetHeight === 0
-        //panel.style.display = 'block';
-        panel.style.zIndex = '10100';
-
-        if (intCoordX > intVPW / 2) { intPopupOffsetLeft -= panel.offsetWidth; }
-        // if x is in the right half of the viewport, pull popup left by its width
-        if (intCoordY > intVPH / 2) { intPopupOffsetTop -= panel.offsetHeight; }
-        // if y is in the bottom half of view port, pull popup up by its height
-
-        // panel.style.top = intPopupOffsetTop + 'px';
-        // panel.style.left = intPopupOffsetLeft + 'px';
-
-        translate3dValue = "translate3d(" + (mouseX) + "px," + (mouseY - 900) + "px,0)";
-        panel.style.transform = translate3dValue;
-
-        //     panel.style.transform = translate3dValue;
-        //     console.log(panel.style.left)
-        //     // console.log(mouseY, mouseX);
-        //     // console.log(e);
-    }   // end fn positionPopupOnPage
-
-
-
-    modal(targetFriend) {
-        window.scrollTo(0, 0);
-
-
-    }
-
-    openModel(e) {
-        document.getElementById('modal').style.visibility = 'visible';
-    }
-
-    // update = (id, updatedFriend) => {
-    //     axios
-    //         .put(`http://localhost:5000/friends/${id}`, updatedFriend)
-    //         .then(res => {
-    //             //this.setState({ targetFriend: response.data })
-    //             //this.setState(() => ({ targetFriend: res.data }));
-
-    //             //this.modal(this.state.targetFriend);
-    //             console.log(res);
-    //             console.log('IN UPDATE');
-    //         })
-    //         .catch(error => {
-    //             console.error(error);
-    //         })
-    // }
 
     edit(id) {
         // set translate3d css to the mouse position, which is captured on 'click' event
@@ -385,11 +256,6 @@ export default class FriendsList extends Component {
                     age: item.age,
                     email: item.email
                 }
-                // this.setState({
-                //     name: targetFriend.name,
-                //     age: targetFriend.age,
-                //     email: targetFriend.email
-                // })
 
             }
         })
@@ -400,21 +266,9 @@ export default class FriendsList extends Component {
             email: targetFriend.email
         })
 
-        //console.log(targetFriend);
-
         console.log('targetFriend ' + targetFriend.name);
-
-        //this.modal(targetFriend);
-        //panel.style.visibility = 'visible';
-
-
-        //this.positionPopupOnPage();
-
-
         window.scrollTo({ top: 0, behavior: 'smooth' });
-
     }
-
 
     del(id) {
 
@@ -430,11 +284,6 @@ export default class FriendsList extends Component {
             })
 
     }
-
-    reload() {
-        window.location.reload(true);
-    }
-
 
     render() {
         return (
@@ -457,8 +306,6 @@ export default class FriendsList extends Component {
                     </MyForm>
 
                 }
-                {/* <MyModalPanel id="panel" /> */}
-
 
                 {this.state.friends.map(friend => (
                     <FriendCard key={friend.id} id={friend.id} >
