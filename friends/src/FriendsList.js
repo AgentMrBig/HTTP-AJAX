@@ -2,19 +2,6 @@ import React, { Component } from 'react';
 import styled from 'styled-components'
 import axios from 'axios';
 
-var mouseX, mouseY, translate3dValue;
-
-
-
-var panel,
-    iName,
-    iAge,
-    iEmail;
-
-var targetFriend = {};
-
-var container = document.getElementById('root');
-
 //Start Form 
 const MyForm = styled.form`
     border: solid grey 1px;
@@ -49,18 +36,7 @@ const Button = styled.button`
     margin: 10px;
     
 `
-
-
-
-function getViewportWidthHeight() {
-    var w = window;
-    var d = document
-    var e = d.documentElement;
-    var g = d.getElementsByTagName('body')[0];
-    var viewX = w.innerWidth || e.clientWidth || g.clientWidth;
-    var viewY = w.innerHeight || e.clientHeight || g.clientHeight;
-    return [viewX, viewY];
-}
+var selectedFriend;
 
 export default class FriendsList extends Component {
     constructor(props) {
@@ -68,13 +44,16 @@ export default class FriendsList extends Component {
         this.state = {
             inEditMode: false,
             friends: [],
-            targetFriend: {},
+            targetFriend: {
+                id: '',
+                name: '',
+                age: '',
+                email: ''
+            },
             name: '',
             age: '',
             email: ''
         };
-
-
     }
 
     componentDidMount() {
@@ -83,10 +62,30 @@ export default class FriendsList extends Component {
     }
 
     getFriend = id => {
+        console.log('in getFriend');
+        console.log('before set', this.state);
 
-        console.log(id);
-        const selectedFriend = this.state.friends.find(friend => friend.id === id);
-        this.setState({ friend: selectedFriend });
+        this.state.friends.forEach(function (item, index, array) {
+            //console.log('friends for each ' + item.id, index, array);
+            if (id === item.id) {
+                selectedFriend = item;
+            }
+        })
+
+
+        this.setState({
+            name: selectedFriend.name,
+            age: selectedFriend.age,
+            email: selectedFriend.email,
+            targetFriend: {
+                id: selectedFriend.id,
+                name: selectedFriend.name,
+                age: selectedFriend.age,
+                email: selectedFriend.email
+            }
+        })
+        console.log('after state set ', this.state);
+        console.log('selected friend ' + selectedFriend.name, selectedFriend.age, selectedFriend.email);
     }
     // START Form 
     // Name and Email validation Function.
@@ -133,39 +132,29 @@ export default class FriendsList extends Component {
                         age: "",
                         email: ""
                     })
-                    iName.value = '';
-                    iAge.value = '';
-                    iEmail.value = '';
+
                     console.log(res);
                 })
                 .catch(error => {
                     //console.error('Server Error', error);
                     console.error(error);
                 })
-
-            //this.reload();
-            // this.setState({
-            //     name: '',
-            //     age: '',
-            //     email: ''
-            // })
-
-
         }
-
-
     }
 
     handleEditSubmit = (event) => {
-
-
         event.preventDefault();
         if (this.validation()) {
             const data = this.state;
             console.log(data);
 
+            this.setState({
+                name: this.state.name,
+                age: this.state.age,
+                email: this.state.email
+            })
             axios
-                .put(`http://localhost:5000/friends/${targetFriend.id}`,
+                .put(`http://localhost:5000/friends/${selectedFriend.id}`,
                     {
                         name: this.state.name,
                         age: this.state.age,
@@ -190,8 +179,6 @@ export default class FriendsList extends Component {
                     //console.error('Server Error', error);
                     console.error(error);
                 })
-
-
             this.setState({
                 inEditMode: false
             })
@@ -199,10 +186,7 @@ export default class FriendsList extends Component {
             document.getElementById('name').nodeValue = '';
             document.getElementById('age').nodeValue = '';
             document.getElementById('email').nodeValue = '';
-
         }
-
-
     }
 
     handleInputChange = (event) => {
@@ -231,47 +215,26 @@ export default class FriendsList extends Component {
     // position at time of click event  
 
     edit(id) {
-        // set translate3d css to the mouse position, which is captured on 'click' event
-        // within the page. The goal is to add a modal on mouse position when the user
-        // clicks the edit button.
+        console.log('in edit');
         this.setState({
             inEditMode: true
         })
 
         console.log('EDIT!');
-        targetFriend =
-            {
-                name: 'loading..',
-                age: 'loading..',
-                email: 'loading..'
-            }
 
-        this.state.friends.forEach(function (item, index, array) {
-            //console.log('friends for each ' + item.id, index, array);
-            if (id === item.id) {
-                console.log(item.id)
-                targetFriend = {
-                    id: item.id,
-                    name: item.name,
-                    age: item.age,
-                    email: item.email
-                }
+        this.getFriend(id);
 
-            }
-        })
         this.setState({
-            targetFriend: targetFriend,
-            name: targetFriend.name,
-            age: targetFriend.age,
-            email: targetFriend.email
+            name: selectedFriend.name,
+            age: selectedFriend.age,
+            email: selectedFriend.email
         })
 
-        console.log('targetFriend ' + targetFriend.name);
+        console.log('targetFriend ' + this.state.name);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     del(id) {
-
         axios
             .delete(`http://localhost:5000/friends/${id}`)
             .then(response => {
@@ -290,10 +253,10 @@ export default class FriendsList extends Component {
             <FriendsListContainer>
                 {this.state.inEditMode ?
                     <MyForm onSubmit={this.handleEditSubmit} >
-                        <h1>Edit {targetFriend.name}</h1>
-                        <p><input id='name' type='text' placeholder={targetFriend.name} name='name' onChange={this.handleInputChange} value={this.state.name} /></p>
-                        <p><input id='age' type='text' placeholder='' name='age' onChange={this.handleInputChange} value={targetFriend.age} /></p>
-                        <p><input id='email' type='text' placeholder='' name='email' onChange={this.handleInputChange} value={targetFriend.email} /></p>
+                        <h1>Edit {selectedFriend.name}</h1>
+                        <p><input id='name' type='text' placeholder='' name='name' onChange={this.handleInputChange} value={this.state.name} /></p>
+                        <p><input id='age' type='text' placeholder='' name='age' onChange={this.handleInputChange} value={this.state.age} /></p>
+                        <p><input id='email' type='text' placeholder='' name='email' onChange={this.handleInputChange} value={this.state.email} /></p>
                         <p><MyButton onClick={this.getFriendsList} name='submit'>Submit</MyButton></p>
                     </MyForm>
                     :
