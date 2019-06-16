@@ -227,11 +227,13 @@ export default class FriendsList extends Component {
             console.log(data);
 
             axios
-                .put('http://localhost:5000/friends', {
-                    name: this.state.name,
-                    age: this.state.age,
-                    email: this.state.email,
-                })
+                .put(`http://localhost:5000/friends/${targetFriend.id}`,
+                    {
+                        name: this.state.name,
+                        age: this.state.age,
+                        email: this.state.email,
+                    }
+                )
                 .then(res => {
                     //this.setState(() => ({ friends: res.data }));
                     // this.setState((prevState, props) => {
@@ -243,9 +245,7 @@ export default class FriendsList extends Component {
                         age: "",
                         email: ""
                     })
-                    iName.value = '';
-                    iAge.value = '';
-                    iEmail.value = '';
+
                     console.log(res);
                 })
                 .catch(error => {
@@ -253,12 +253,6 @@ export default class FriendsList extends Component {
                     console.error(error);
                 })
 
-            //this.reload();
-            // this.setState({
-            //     name: '',
-            //     age: '',
-            //     email: ''
-            // })
 
             this.setState({
                 inEditMode: false
@@ -349,20 +343,21 @@ export default class FriendsList extends Component {
         document.getElementById('modal').style.visibility = 'visible';
     }
 
-    update = (id, updatedFriend) => {
-        axios
-            .put(`http://localhost:5000/friends/${id}`, updatedFriend)
-            .then(res => {
-                //this.setState({ targetFriend: response.data })
-                //this.setState(() => ({ targetFriend: res.data }));
+    // update = (id, updatedFriend) => {
+    //     axios
+    //         .put(`http://localhost:5000/friends/${id}`, updatedFriend)
+    //         .then(res => {
+    //             //this.setState({ targetFriend: response.data })
+    //             //this.setState(() => ({ targetFriend: res.data }));
 
-                //this.modal(this.state.targetFriend);
-                console.log(res);
-            })
-            .catch(error => {
-                console.error(error);
-            })
-    }
+    //             //this.modal(this.state.targetFriend);
+    //             console.log(res);
+    //             console.log('IN UPDATE');
+    //         })
+    //         .catch(error => {
+    //             console.error(error);
+    //         })
+    // }
 
     edit(id) {
         // set translate3d css to the mouse position, which is captured on 'click' event
@@ -399,7 +394,10 @@ export default class FriendsList extends Component {
             }
         })
         this.setState({
-            targetFriend: targetFriend
+            targetFriend: targetFriend,
+            name: targetFriend.name,
+            age: targetFriend.age,
+            email: targetFriend.email
         })
 
         //console.log(targetFriend);
@@ -442,9 +440,9 @@ export default class FriendsList extends Component {
         return (
             <FriendsListContainer>
                 {this.state.inEditMode ?
-                    <MyForm onSubmit={this.update(targetFriend.id, targetFriend)} >
+                    <MyForm onSubmit={this.handleEditSubmit} >
                         <h1>Edit {targetFriend.name}</h1>
-                        <p><input id='name' type='text' placeholder='' name='name' onChange={this.handleInputChange} value={targetFriend.name} /></p>
+                        <p><input id='name' type='text' placeholder={targetFriend.name} name='name' onChange={this.handleInputChange} value={this.state.name} /></p>
                         <p><input id='age' type='text' placeholder='' name='age' onChange={this.handleInputChange} value={targetFriend.age} /></p>
                         <p><input id='email' type='text' placeholder='' name='email' onChange={this.handleInputChange} value={targetFriend.email} /></p>
                         <p><MyButton onClick={this.getFriendsList} name='submit'>Submit</MyButton></p>
